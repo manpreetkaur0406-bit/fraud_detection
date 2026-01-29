@@ -29,15 +29,21 @@ else:
     joblib.dump(pipeline, MODEL_FILE)
 
 # Example inputs (change according to your dataset)
-feature1 = st.number_input("Feature 1")
-feature2 = st.number_input("Feature 2")
-feature3 = st.number_input("Feature 3")
 
-if st.button("Predict"):
-    input_data = np.array([[feature1, feature2, feature3]])
-    prediction = pipeline.predict(input_data)
+transaction_type = st.selectbox("Transaction Type", ["PAYMENT", "TRANSFER", "CASH_OUT", "DEPOSIT"])
+amount = st.number_input("Transaction Amount", 0.0, value=1000.0)
+oldbalanceOrg = st.number_input("Old Balance Sender", 0.0, value=1000.0)
+newbalanceOrig = st.number_input("New Balance Sender", 0.0, value=900.0)
+oldbalanceDest = st.number_input("Old Balance Receiver", 0.0, value=0.0)
+newbalanceDest = st.number_input("New Balance Receiver", 0.0, value=0.0)
+
+
+if st.button("Check Fraud"):
+    features = np.array([[amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest]])
+    prediction = model.predict(features)
 
     if prediction[0] == 1:
-        st.error("Fraud Transaction Detected 🚨")
+        st.error("⚠️ Fraudulent Transaction!")
     else:
-        st.success("Normal Transaction ✅")
+        st.success("✅ Legit Transaction")
+
